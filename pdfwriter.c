@@ -78,7 +78,7 @@ static FILE *logfp=NULL;
 #endif
 
 static void _set_defaults() {
-    conf.anondirname = "ANONYMOUS";
+    conf.anondirname = "anonymous users";
     conf.anonuser = "nobody";
     conf.grp = "_lp";
     conf.log = "/var/log/cups";
@@ -275,21 +275,21 @@ static int preparetitle(char *title) {
     if (strlen(title)>conf.truncate) {
         title[conf.truncate]='\0';
         log_event(CPDEBUG, "truncating title", title);
+        
+        /* cut at word boundries */
+        cut = strrchr(title, ' ');
+        if ((cut != NULL) && (cut != title)) {
+            cut[0] = '\0';
+        }
+        while (ispunct(title[strlen(title)-1])) {
+            title[strlen(title)-1] = '\0';
+        }
+        
+        /* strip trailing spaces */
+        while (title[strlen(title)-1] == ' ') {
+            title[strlen(title)-1]='\0';
+        }
     }
-    /* cut at word boundries */
-    cut = strrchr(title, ' ');
-    if ((cut != NULL) && (cut != title)) {
-        cut[0] = '\0';
-    }
-    while (ispunct(title[strlen(title)-1])) {
-        title[strlen(title)-1] = '\0';
-    }
-    
-    /* strip trailing spaces */
-    while (title[strlen(title)-1] == ' ') {
-        title[strlen(title)-1]='\0';
-    }
-    
     return strcmp(title, "");
 }
 
